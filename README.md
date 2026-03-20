@@ -37,15 +37,17 @@ Fablabrobot/
 │       ├── profil/          # Profil utilisateur
 │       ├── projets/         # Galerie de projets
 │       ├── utilisateurs/    # Authentification
-│       └── webtv/           # Plateforme vidéo
+│       └── webtv/           # Plateforme vidéo (AJAX commentaires)
 │
 ├── config/                  # Configuration globale
 │
-└── public/                  # Dossier accessible publiquement
-    ├── css/                 # Styles CSS
-    ├── images/              # Images et médias
-    ├── uploads/             # Fichiers uploadés
-    └── index.php            # Point d'entrée (routeur)
+├── public/                  # Dossier accessible publiquement
+│   ├── css/                 # CSS compilé (depuis SCSS)
+│   ├── scss/                # Fichiers SCSS (variables, composants, layout)
+│   ├── js/                  # Scripts JavaScript (AJAX, interactions)
+│   ├── images/              # Images et médias
+│   ├── uploads/             # Fichiers uploadés
+│   └── index.php            # Point d'entrée (routeur)
 ```
 
 ### Fonctionnement du routeur
@@ -299,7 +301,6 @@ J'ai porté une attention particulière à la sécurité du site en implémentan
 - Vérification du rôle pour l'accès aux pages admin
 - Régénération de l'ID de session lors de la connexion
 
-
 ## Design et expérience utilisateur
 
 **Responsive Design**
@@ -314,16 +315,29 @@ Le site est entièrement responsive grâce à Bootstrap 5. Il s'adapte automatiq
 
 **Performance**
 
-- Images optimisées
-- CSS minifié pour la production
-- Chargement asynchrone de certaines ressources
+- Utilisation de variables pour les couleurs et tailles
+- Organisation des styles en fichiers modulaires
+- Imbrication des sélecteurs pour une meilleure lisibilité
+- Compilation en CSS pour le navigateur
+- Utilisation d'AJAX (Asynchrone)
+
+Certaines fonctionnalités du site utilisent AJAX pour améliorer l'expérience utilisateur.
+
+- Chargement dynamique des commentaires (WebTV)
+- Mise à jour du contenu sans rechargement de page
+- Communication avec le serveur en arrière-plan via JavaScript
+
+Cela permet :
+
+- Une navigation plus fluide
+- Moins de rechargements complets
+- Une meilleure performance perçue
 
 **Cohérence visuelle**
 
 - Charte graphique uniforme sur tout le site
 - Utilisation cohérente de Bootstrap
 - Navigation intuitive avec menu clair
-
 
 ## Crédits et licence
 
