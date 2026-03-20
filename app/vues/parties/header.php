@@ -46,7 +46,7 @@ $hasPhoto = !empty($photoUtilisateur) && file_exists($photoPath);
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
   
-  <link rel="stylesheet" href="<?= $baseUrl ?>css/header.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>css/style.css" />
 </head>
 
 <body>

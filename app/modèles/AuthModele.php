@@ -1,31 +1,33 @@
 <?php
 
-class AuthModele {
-    private $db;
+class AuthModele
+{
+    private PDO $db;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->db = $db;
     }
 
-  
-    public function getUserByEmail($email) {
-        $stmt = $this->db->prepare("SELECT * FROM connexion WHERE email = ?");
+    public function getUserByEmail(string $email): ?array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM utilisateurs WHERE email = ?");
         $stmt->execute([$email]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    
-    public function createUser($nom, $email, $mot_de_passe, $role = 'Utilisateur') {
+    public function createUser(string $nom, string $email, string $mot_de_passe, string $role = 'Utilisateur'): bool
+    {
         $stmt = $this->db->prepare("
-            INSERT INTO connexion (nom, email, mot_de_passe, role)
+            INSERT INTO utilisateurs (nom, email, mot_de_passe, role)
             VALUES (?, ?, ?, ?)
         ");
         return $stmt->execute([$nom, $email, $mot_de_passe, $role]);
     }
 
-    
-    public function verifierConnexion($email, $mot_de_passe) {
-        $stmt = $this->db->prepare("SELECT * FROM connexion WHERE email = ?");
+    public function verifierConnexion(string $email, string $mot_de_passe): array|false
+    {
+        $stmt = $this->db->prepare("SELECT * FROM utilisateurs WHERE email = ?");
         $stmt->execute([$email]);
         $utilisateur = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -35,9 +37,9 @@ class AuthModele {
         return false;
     }
 
-   
-    public function emailExiste($email) {
-        $stmt = $this->db->prepare("SELECT id FROM connexion WHERE email = ?");
+    public function emailExiste(string $email): bool
+    {
+        $stmt = $this->db->prepare("SELECT id FROM utilisateurs WHERE email = ?");
         $stmt->execute([$email]);
         return $stmt->fetch(PDO::FETCH_ASSOC) !== false;
     }

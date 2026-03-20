@@ -73,7 +73,7 @@ include(__DIR__ . '/../parties/header.php');
             </div>
             <div class="carousel-caption-custom">
               <div class="caption-content">
-                <h2 class="caption-title">Nos Projets</h2>
+                <h3 class="caption-title">Nos Projets</h3>
                 <p class="caption-text">Découvrez nos réalisations techniques et innovantes</p>
                 <a href="?page=projets" class="btn-carousel">
                   <i class="fas fa-rocket me-2"></i> Découvrir nos projets
@@ -90,7 +90,7 @@ include(__DIR__ . '/../parties/header.php');
             </div>
             <div class="carousel-caption-custom">
               <div class="caption-content">
-                <h2 class="caption-title">Nos Articles</h2>
+                <h4 class="caption-title">Nos Articles</h4>
                 <p class="caption-text">Actualités, tutoriels et veille technologique</p>
                 <a href="?page=articles" class="btn-carousel">
                   <i class="fas fa-newspaper me-2"></i> Lire nos articles
@@ -107,7 +107,7 @@ include(__DIR__ . '/../parties/header.php');
             </div>
             <div class="carousel-caption-custom">
               <div class="caption-content">
-                <h2 class="caption-title">Nos Vidéos</h2>
+                <h5 class="caption-title">Nos Vidéos</h5>
                 <p class="caption-text">Démonstrations et présentations de nos projets</p>
                 <a href="?page=contact" class="btn-carousel">
                   <i class="fas fa-video me-2"></i> Voir nos vidéos
@@ -133,7 +133,7 @@ include(__DIR__ . '/../parties/header.php');
   <section class="featured-projects">
     <div class="container">
       <div class="section-header text-center">
-        <h2>Nos Domaines d'Expertise</h2>
+        <h6>Nos Domaines d'Expertise</h6>
         <p class="section-subtitle">Découvrez nos principales activités et réalisations techniques</p>
       </div>
 
@@ -147,7 +147,7 @@ include(__DIR__ . '/../parties/header.php');
               </div>
             </div>
             <div class="card-content">
-              <h4 class="card-title">Plateforme WebTV</h4>
+              <h7 class="card-title">Plateforme WebTV</h7>
               <p class="card-description">Streaming et diffusion de contenu multimédia en temps réel</p>
               <a href="?page=webtv" class="btn-card">
                 En savoir plus <i class="fas fa-arrow-right ms-2"></i>
@@ -165,7 +165,7 @@ include(__DIR__ . '/../parties/header.php');
               </div>
             </div>
             <div class="card-content">
-              <h4 class="card-title">Nos Projets</h4>
+              <h8 class="card-title">Nos Projets</h8>
               <p class="card-description">Développement de solutions robotiques intelligentes et autonomes</p>
               <a href="?page=projets" class="btn-card">
                 En savoir plus <i class="fas fa-arrow-right ms-2"></i>
@@ -183,7 +183,7 @@ include(__DIR__ . '/../parties/header.php');
               </div>
             </div>
             <div class="card-content">
-              <h4 class="card-title">Articles Fablab</h4>
+              <h9 class="card-title">Articles Fablab</h9>
               <p class="card-description">Ensemble des Articles de Fablab robotique & Web</p>
               <a href="?page=articles" class="btn-card">
                 En savoir plus <i class="fas fa-arrow-right ms-2"></i>

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-class Projet {
+class ProjetModele {
     private $conn;
 
     public function __construct() {
@@ -11,7 +11,7 @@ class Projet {
 
    
     public function getTousLesProjets() {
-        $stmt = $this->conn->query("SELECT * FROM projects ORDER BY created_at DESC");
+        $stmt = $this->conn->query("SELECT * FROM projets ORDER BY cree_le DESC");
         $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
      
@@ -27,7 +27,7 @@ class Projet {
 
   
     public function getProjetParId($id) {
-        $stmt = $this->conn->prepare("SELECT * FROM projects WHERE id = ?");
+        $stmt = $this->conn->prepare("SELECT * FROM projets WHERE id = ?");
         $stmt->execute([$id]);
         $p = $stmt->fetch(PDO::FETCH_ASSOC);
 

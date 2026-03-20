@@ -1,10 +1,10 @@
 <?php
-require_once __DIR__ . '/../modèles/Projet.php';
+require_once __DIR__ . '/../modèles/ProjetModele.php';
 
 class ProjetControleur {
 
     public function detail($id) {
-        $modele = new Projet();
+        $modele = new ProjetModele();
         $projet = $modele->getProjetParId($id);
 
         

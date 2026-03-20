@@ -1,12 +1,13 @@
 <?php
+require_once __DIR__ . '/../config/database.php';
+
 class ProfilModele
 {
     private PDO $db;
 
     public function __construct()
     {
-        $this->db = new PDO('mysql:host=127.0.0.1:3306;dbname=fablab;charset=utf8mb4', 'root', '');
-        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->db = getDatabase();
     }
 
     public function getUserById(int $id): ?array

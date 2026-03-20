@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../config/database.php';
 
 class AdminArticlesModele
@@ -9,14 +8,14 @@ class AdminArticlesModele
 
     public function all(): array
     {
-        $sql = "SELECT id, titre, contenu, auteur, image_url, created_at, updated_at
-                FROM articles ORDER BY created_at DESC";
+        $sql = "SELECT id, titre, contenu, auteur, image_url, cree_le, modifie_le
+                FROM articles ORDER BY cree_le DESC";
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function create(array $data): int
     {
-        $sql = "INSERT INTO articles (titre, contenu, auteur, image_url, created_at, updated_at)
+        $sql = "INSERT INTO articles (titre, contenu, auteur, image_url, cree_le, modifie_le)
                 VALUES (:titre, :contenu, :auteur, :image_url, NOW(), NOW())";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -31,7 +30,7 @@ class AdminArticlesModele
     public function update(int $id, array $data): bool
     {
         $sql = "UPDATE articles
-                SET titre=:titre, contenu=:contenu, auteur=:auteur, image_url=:image_url, updated_at=NOW()
+                SET titre=:titre, contenu=:contenu, auteur=:auteur, image_url=:image_url, modifie_le=NOW()
                 WHERE id=:id";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([

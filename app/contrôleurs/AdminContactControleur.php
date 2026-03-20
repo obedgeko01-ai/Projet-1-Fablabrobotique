@@ -9,6 +9,12 @@ class AdminContactControleur
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
         $this->modele = new AdminContactModele();
+
+             if (!isset($_SESSION['utilisateur_role']) || strtolower($_SESSION['utilisateur_role']) !== 'admin') {
+            header('Location: ?page=login');
+            exit();
+        }
+
     }
 
     public function handleRequest(): void
@@ -47,6 +53,10 @@ class AdminContactControleur
         $non_lus = count(array_filter($contacts, fn($c) => $c['statut'] === 'non_lu'));
         $lus = count(array_filter($contacts, fn($c) => $c['statut'] === 'lu'));
         $traites = count(array_filter($contacts, fn($c) => $c['statut'] === 'traite'));
+        $flashMessage = $_SESSION['message'] ?? null;
+$flashType = $_SESSION['message_type'] ?? 'info';
+
+unset($_SESSION['message'], $_SESSION['message_type']);
 
         $stats = compact('total', 'non_lus', 'lus', 'traites');
         include __DIR__ . '/../vues/admin/contact-admin.php';

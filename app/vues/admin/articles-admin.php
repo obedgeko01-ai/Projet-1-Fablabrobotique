@@ -39,13 +39,12 @@
         <section class="dashboard">
             <h1><i class="fas fa-newspaper"></i> Gestion des Articles</h1>
 
-            <?php if (!empty($_SESSION['message'])): ?>
-                <div class="alert alert-<?= $_SESSION['message_type'] ?>">
-                    <i class="fas fa-<?= $_SESSION['message_type'] === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
-                    <?= htmlspecialchars($_SESSION['message']) ?>
-                </div>
-                <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
-            <?php endif; ?>
+         <?php if (!empty($flashMessage)): ?>
+    <div class="alert alert-<?= htmlspecialchars($flashType) ?>">
+        <i class="fas fa-<?= $flashType === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
+        <?= htmlspecialchars($flashMessage) ?>
+    </div>
+<?php endif; ?>
 
             <div class="action-buttons">
                 <button class="btn btn-primary" onclick="openModal('create')">
@@ -99,7 +98,7 @@
                                 <td><strong style="color: var(--primary-color);"><?= htmlspecialchars($article['titre']) ?></strong></td>
                                 <td style="color: var(--text-muted);"><?= htmlspecialchars(substr($article['contenu'], 0, 80)) ?>...</td>
                                 <td><?= htmlspecialchars($article['auteur']) ?></td>
-                                <td><?= date('d/m/Y', strtotime($article['created_at'])) ?></td>
+                                <td><?= date('d/m/Y', strtotime($article['cree_le'])) ?></td>
                                 <td>
                                     <div class="table-actions" style="display: flex; gap: 8px; justify-content: center;">
                                         <button class="btn btn-warning btn-small" onclick='editArticle(<?= $article["id"] ?>)' title="Modifier">

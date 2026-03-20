@@ -53,13 +53,12 @@ $GLOBALS['baseUrl'] = $GLOBALS['baseUrl'] ?? '/Fablabrobot/public/';
             </h1>
 
             <!-- Messages flash -->
-            <?php if (!empty($_SESSION['message'])): ?>
-                <div class="alert alert-<?= htmlspecialchars($_SESSION['message_type'] ?? 'info') ?>">
-                    <i class="fas fa-<?= $_SESSION['message_type'] === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
-                    <?= htmlspecialchars($_SESSION['message']) ?>
-                </div>
-                <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
-            <?php endif; ?>
+         <?php if (!empty($flashMessage)): ?>
+<div class="alert alert-<?= htmlspecialchars($flashType ?? 'info') ?>">
+<i class="fas fa-<?= $flashType === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
+<?= htmlspecialchars($flashMessage) ?>
+</div>
+<?php endif; ?>
 
             <!-- Stats Cards -->
             <div class="cards">
@@ -159,7 +158,7 @@ $GLOBALS['baseUrl'] = $GLOBALS['baseUrl'] ?? '/Fablabrobot/public/';
                                     
                                     <td>
                                         <small style="color: var(--text-muted);">
-                                            <?= !empty($c['created_at']) ? date('d/m/Y H:i', strtotime($c['created_at'])) : '—' ?>
+                                            <?= !empty($c['cree_le']) ? date('d/m/Y H:i', strtotime($c['cree_le'])) : '—' ?>
                                         </small>
                                     </td>
                                     

@@ -10,6 +10,12 @@ class AdminArticlesControleur
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
         $this->modele = new AdminArticlesModele();
+        
+             if (!isset($_SESSION['utilisateur_role']) || strtolower($_SESSION['utilisateur_role']) !== 'admin') {
+            header('Location: ?page=login');
+            exit();
+        }
+
     }
 
     public function handleRequest(?string $action = null): void
@@ -61,6 +67,10 @@ class AdminArticlesControleur
     {
         $articles = $this->modele->all();
         $total_articles = count($articles);
+        $flashMessage = $_SESSION['message'] ?? null;
+$flashType = $_SESSION['message_type'] ?? 'info';
+
+unset($_SESSION['message'], $_SESSION['message_type']);
         include __DIR__ . '/../vues/admin/articles-admin.php';
     }
 }

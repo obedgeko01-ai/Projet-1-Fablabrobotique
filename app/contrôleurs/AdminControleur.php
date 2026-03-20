@@ -2,29 +2,27 @@
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../modèles/AdminModele.php';
 
-class AdminControleur {
+class AdminControleur
+{
+    private AdminModele $modele;
 
-    private $modele;
-
-    public function __construct() {
+    public function __construct()
+    {
         $this->modele = new AdminModele();
     }
 
-    public function index() {
-    session_start();
+    public function index(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
 
-    if (!isset($_SESSION['utilisateur_role']) || strtolower($_SESSION['utilisateur_role']) !== 'admin') {
-        header('Location: ?page=login');
-        exit;
+        if (!isset($_SESSION['utilisateur_role']) || strtolower($_SESSION['utilisateur_role']) !== 'admin') {
+            header('Location: ?page=login');
+            exit;
+        }
+
+        $projets       = $this->modele->getAllProjets();
+        $total_projets = count($projets);
+
+        require __DIR__ . '/../vues/admin/projets-admin.php';
     }
-
-   
-    $projects = $this->modele->getAllProjects();
-    $total_projects = count($projects);
-
-    
-    require __DIR__ . '/../vues/admin/projets-admin.php';
-
-}
-
 }

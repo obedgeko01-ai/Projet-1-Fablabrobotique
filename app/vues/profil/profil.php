@@ -8,14 +8,15 @@
     </a>
 
    
-    <?php if (!empty($_SESSION['message'])): ?>
-        <div class="alert <?= strpos($_SESSION['message'], 'succès') !== false || strpos($_SESSION['message'], 'mis') !== false ? 'alert-success' : 'alert-error' ?>">
-            <i class="fas <?= strpos($_SESSION['message'], 'succès') !== false || strpos($_SESSION['message'], 'mis') !== false ? 'fa-check-circle' : 'fa-exclamation-triangle' ?>"></i>
-            <span><?= htmlspecialchars($_SESSION['message']); unset($_SESSION['message']); ?></span>
-            <button class="close-alert" onclick="this.parentElement.style.display='none'">&times;</button>
-        </div>
-    <?php endif; ?>
+ <?php if (!empty($flashMessage)): ?>
+<div class="alert <?= strpos($flashMessage, 'succès') !== false || strpos($flashMessage, 'mis') !== false ? 'alert-success' : 'alert-error' ?>">
+    <i class="fas <?= strpos($flashMessage, 'succès') !== false || strpos($flashMessage, 'mis') !== false ? 'fa-check-circle' : 'fa-exclamation-triangle' ?>"></i>
 
+    <span><?= htmlspecialchars($flashMessage); ?></span>
+
+    <button class="close-alert" onclick="this.parentElement.style.display='none'">&times;</button>
+</div>
+<?php endif; ?>
     <div class="profile-wrapper">
         
         <div class="profile-header">
@@ -149,7 +150,7 @@
                                 <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
                                 <div class="stat-info">
                                     <span class="stat-label">Membre depuis</span>
-                                    <span class="stat-value"><?= !empty($user['date_creation']) ? date('d/m/Y', strtotime($user['date_creation'])) : 'Non renseignée'; ?></span>
+                                    <span class="stat-value"><?= !empty($user['cree_le']) ? date('d/m/Y', strtotime($user['cree_le'])) : 'Non renseignée'; ?></span>
                                 </div>
                             </div>
                             <div class="stat-item">

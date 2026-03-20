@@ -29,15 +29,20 @@ class AdminCommentairesControleur
         $this->index();
     }
 
-    public function index(): void
-    {
-        $q = isset($_GET['q']) && trim((string)$_GET['q']) !== '' ? trim((string)$_GET['q']) : null;
+ public function index(): void
+{
+    $q = isset($_GET['q']) && trim((string)$_GET['q']) !== '' ? trim((string)$_GET['q']) : null;
 
-        $commentaires = $this->modele->all($q);
-        $stats = $this->modele->getStats();
+    $commentaires = $this->modele->all($q);
+    $stats = $this->modele->getStats();
 
-        require __DIR__ . '/../vues/admin/commentaires-admin.php';
-    }
+    $flashMessage = $_SESSION['message'] ?? null;
+    $flashType = $_SESSION['message_type'] ?? 'info';
+
+    unset($_SESSION['message'], $_SESSION['message_type']);
+
+    require __DIR__ . '/../vues/admin/commentaires-admin.php';
+}
 
     private function supprimer(): void
     {

@@ -14,7 +14,7 @@
                 <div class="project-image">
                     <?php if (isset($projet['image_url']) && trim($projet['image_url']) !== ''): ?>
                         <img src="../public/images/projets/<?= htmlspecialchars($projet['image_url']); ?>" 
-                             alt="<?= htmlspecialchars($projet['title']); ?>"
+                             alt="<?= htmlspecialchars($projet['titre']); ?>"
                              onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <i class="fas fa-code" style="display:none;"></i>
                     <?php else: ?>
@@ -23,11 +23,11 @@
                 </div>
 
                 <div class="project-header-content">
-                    <h1 class="project-title"><?= htmlspecialchars($projet['title']); ?></h1>
+                    <h1 class="project-title"><?= htmlspecialchars($projet['titre']); ?></h1>
                     <div class="project-meta">
                         <div class="meta-item">
                             <i class="fas fa-calendar"></i>
-                            <span><?= (new DateTime($projet['created_at']))->format('d/m/Y'); ?></span>
+                            <span><?= (new DateTime($projet['cree_le']))->format('d/m/Y'); ?></span>
                         </div>
                     </div>
                 </div>
@@ -41,11 +41,11 @@
                             <p class="description-text"><?= nl2br(htmlspecialchars($projet['description'])); ?></p>
                         </div>
 
-                        <?php if (isset($projet['description_detailed']) && trim($projet['description_detailed']) !== '' && $projet['description_detailed'] != $projet['description']): ?>
+                        <?php if (isset($projet['description_detaillee']) && trim($projet['description_detaillee']) !== '' && $projet['description_detaillee'] != $projet['description']): ?>
                             <div class="section-block">
                                 <h3><i class="fas fa-align-left"></i> Description détaillée</h3>
                                 <div class="detailed-description">
-                                    <?= nl2br(htmlspecialchars($projet['description_detailed'])); ?>
+                                    <?= nl2br(htmlspecialchars($projet['description_detaillee'])); ?>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -68,24 +68,24 @@
                         <h3><i class="fas fa-chart-bar"></i> Informations du projet</h3>
                         <div class="info-item">
                             <div class="info-label">Date de création</div>
-                            <div class="info-value"><?= (new DateTime($projet['created_at']))->format('d/m/Y'); ?></div>
+                            <div class="info-value"><?= (new DateTime($projet['cree_le']))->format('d/m/Y'); ?></div>
                         </div>
 
-                        <?php if (isset($projet['updated_at']) && $projet['updated_at'] != $projet['created_at']): ?>
+                        <?php if (isset($projet['modifie_le']) && $projet['modifie_le'] != $projet['cree_le']): ?>
                             <div class="info-item">
                                 <div class="info-label">Dernière mise à jour</div>
-                                <div class="info-value"><?= (new DateTime($projet['updated_at']))->format('d/m/Y'); ?></div>
+                                <div class="info-value"><?= (new DateTime($projet['modifie_le']))->format('d/m/Y'); ?></div>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
 
-                <?php if (isset($projet['features']) && trim($projet['features']) !== ''): ?>
+                <?php if (isset($projet['fonctionnalites']) && trim($projet['fonctionnalites']) !== ''): ?>
                     <div class="features-section">
                         <h2><i class="fas fa-cogs"></i> Fonctionnalités principales</h2>
                         <div class="features-grid">
                             <?php 
-                            $features = explode('|', $projet['features']);
+                            $features = explode('|', $projet['fonctionnalites']);
                             foreach ($features as $feature): 
                                 $feature = trim($feature);
                                 if ($feature !== ''): ?>
@@ -98,11 +98,11 @@
                     </div>
                 <?php endif; ?>
 
-                <?php if (isset($projet['challenges']) && trim($projet['challenges']) !== ''): ?>
+                <?php if (isset($projet['defis']) && trim($projet['defis']) !== ''): ?>
                     <div class="challenges-section">
                         <h2><i class="fas fa-wrench"></i> Défis techniques rencontrés</h2>
                         <div class="challenges-content">
-                            <?= nl2br(htmlspecialchars($projet['challenges'])); ?>
+                            <?= nl2br(htmlspecialchars($projet['defis'])); ?>
                         </div>
                     </div>
                 <?php endif; ?>

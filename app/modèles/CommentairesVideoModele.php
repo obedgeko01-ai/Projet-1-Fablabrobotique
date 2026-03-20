@@ -10,38 +10,36 @@ class CommentairesVideoModele
         $this->db = getDatabase();
     }
 
- 
     public function listForVideo(int $videoId): array
     {
         $sql = "SELECT 
-                    c.id, c.texte, c.created_at, c.user_id, c.video_id,
+                    c.id, c.texte, c.cree_le, c.utilisateur_id, c.video_id,
                     u.nom AS auteur,
                     u.photo AS user_photo
                 FROM commentaires c
-                INNER JOIN connexion u ON u.id = c.user_id
+                INNER JOIN utilisateurs u ON u.id = c.utilisateur_id
                 WHERE c.video_id = :video_id
-                ORDER BY c.created_at DESC";
+                ORDER BY c.cree_le DESC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':video_id' => $videoId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    
-    public function create(int $videoId, int $userId, string $texte): bool
+    public function create(int $videoId, int $userId, string $texte): int|false
     {
-        $sql = "INSERT INTO commentaires (video_id, user_id, texte, created_at)
-                VALUES (:video_id, :user_id, :texte, NOW())";
-
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            ':video_id' => $videoId,
-            ':user_id' => $userId,
-            ':texte' => $texte
+        $stmt = $this->db->prepare(
+            "INSERT INTO commentaires (video_id, utilisateur_id, texte, cree_le)
+             VALUES (:video_id, :utilisateur_id, :texte, NOW())"
+        );
+        $ok = $stmt->execute([
+            ':video_id'        => $videoId,
+            ':utilisateur_id'  => $userId,
+            ':texte'           => $texte,
         ]);
+        return $ok ? (int)$this->db->lastInsertId() : false;
     }
 
-  
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare("DELETE FROM commentaires WHERE id = :id");

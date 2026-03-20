@@ -93,7 +93,7 @@
                     ? '<i class="fab fa-youtube" style="color:#ff4d4d"></i> YouTube'
                     : '<i class="fas fa-folder" style="color:#00afa7"></i> Locale' ?>
                 </td>
-                <td><?= date('d/m/Y', strtotime($video['created_at'])) ?></td>
+                <td><?= date('d/m/Y', strtotime($video['cree_le'])) ?></td>
                 <td>
                   <div class="table-actions">
                     <button class="btn btn-warning btn-small" onclick='openModal("edit", <?= json_encode($video) ?>)'>

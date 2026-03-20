@@ -122,7 +122,7 @@
                       <?= ucfirst($u['role']) ?>
                     </span>
                   </td>
-                  <td><?= date('d/m/Y', strtotime($u['date_creation'])) ?></td>
+                  <td><?= date('d/m/Y', strtotime($u['cree_le'])) ?></td>
                   <td>
                     <div class="table-actions">
                       <button class="btn btn-primary btn-small" onclick='viewUser(<?= json_encode($u, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)'><i class="fas fa-eye"></i></button>

@@ -86,7 +86,7 @@ if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'], true))
 
       <div class="form-group">
         <label>Description détaillée</label>
-        <textarea name="description_detailed" rows="5" placeholder="Une description plus complète du projet..."></textarea>
+        <textarea name="description_detaillee" rows="5" placeholder="Une description plus complète du projet..."></textarea>
       </div>
 
       <div class="form-group">
@@ -97,13 +97,13 @@ if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'], true))
 
       <div class="form-group">
         <label>Fonctionnalités principales</label>
-        <textarea name="features" rows="3" placeholder="Ex : Navigation autonome|Détection d'obstacles|Contrôle Bluetooth"></textarea>
+        <textarea name="fonctionnalites" rows="3" placeholder="Ex : Navigation autonome|Détection d'obstacles|Contrôle Bluetooth"></textarea>
         <div class="info-box">💡 Séparez les fonctionnalités par des <strong>|</strong> (barre verticale).</div>
       </div>
 
       <div class="form-group">
         <label>Défis rencontrés</label>
-        <textarea name="challenges" rows="3" placeholder="Décrivez les difficultés techniques et comment vous les avez résolues..."></textarea>
+        <textarea name="defis" rows="3" placeholder="Décrivez les difficultés techniques et comment vous les avez résolues..."></textarea>
       </div>
 
       

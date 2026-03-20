@@ -22,11 +22,10 @@ $commentaires = $commentaires ?? [];
 
 <body>
 
-<?php if (!empty($_SESSION['message'])): ?>
-  <div class="alert-message alert-<?= htmlspecialchars($_SESSION['message_type'] ?? 'info') ?>">
-    <?= htmlspecialchars($_SESSION['message']) ?>
+<?php if (!empty($flashMessage)): ?>
+  <div class="alert-message alert-<?= htmlspecialchars($flashType ?? 'info') ?>">
+    <?= htmlspecialchars($flashMessage) ?>
   </div>
-  <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
 <?php endif; ?>
 
 
@@ -117,13 +116,13 @@ $commentaires = $commentaires ?? [];
               <span><?= htmlspecialchars($current['auteur']) ?></span>
             </div>
           <?php endif; ?>
-          <?php if (!empty($current['created_at'])): ?>
+          <?php if (!empty($current['cree_le'])): ?>
             <div class="meta-item">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
-              <span><?= date('d/m/Y', strtotime($current['created_at'])) ?></span>
+              <span><?= date('d/m/Y', strtotime($current['cree_le'])) ?></span>
             </div>
           <?php endif; ?>
         </div>
@@ -146,12 +145,12 @@ $commentaires = $commentaires ?? [];
         </h2>
       </div>
 
-      <?php if (!empty($_SESSION['utilisateur_nom'])): ?>
-        <form method="post" class="comment-form">
+    <?php if ($isLogged): ?>
+        <form method="post" class="comment-form" id="commentForm">
           <input type="hidden" name="action" value="add_comment">
           <div class="comment-input-wrapper">
             <div class="user-avatar">
-              <?= strtoupper(substr($_SESSION['utilisateur_nom'], 0, 1)) ?>
+            <?= strtoupper(substr($userName ?? 'U', 0, 1)) ?>
             </div>
             <textarea 
               name="commentaire" 
@@ -187,32 +186,31 @@ $commentaires = $commentaires ?? [];
       <div class="comments-list">
         <?php if (!empty($commentaires)): ?>
           <?php foreach ($commentaires as $c): ?>
-            <div class="comment-item">
+            <div class="comment-item" data-comment-id="<?= (int)($c['id'] ?? 0) ?>">
               <div class="comment-avatar">
                 <?= strtoupper(substr($c['auteur'] ?? 'U', 0, 1)) ?>
               </div>
               <div class="comment-content">
                 <div class="comment-header">
                   <span class="comment-author"><?= htmlspecialchars($c['auteur'] ?? 'Utilisateur') ?></span>
-                  <?php if (!empty($c['created_at'])): ?>
-                    <span class="comment-date"><?= date('d/m/Y à H:i', strtotime($c['created_at'])) ?></span>
+                  <?php if (!empty($c['cree_le'])): ?>
+                    <span class="comment-date"><?= date('d/m/Y à H:i', strtotime($c['cree_le'])) ?></span>
                   <?php endif; ?>
                 </div>
                 <p class="comment-text"><?= nl2br(htmlspecialchars($c['texte'] ?? '')) ?></p>
                 
-                <?php if (!empty($_SESSION['utilisateur_role']) && strtolower($_SESSION['utilisateur_role']) === 'admin'): ?>
-                  <a 
-                    href="?page=webtv&video=<?= (int)($current['id'] ?? 0) ?>&del=<?= (int)($c['id'] ?? 0) ?>"
-                    class="btn-delete"
-                    onclick="return confirm('Supprimer ce commentaire ?')"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                    Supprimer
-                  </a>
-                <?php endif; ?>
+               <?php if ($isAdmin): ?>
+    <button
+        class="btn-delete btn-delete-ajax"
+        data-comment-id="<?= (int)($c['id'] ?? 0) ?>"
+    >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Supprimer
+    </button>
+<?php endif; ?>
               </div>
             </div>
           <?php endforeach; ?>
@@ -303,5 +301,109 @@ $commentaires = $commentaires ?? [];
 </div>
 
 <?php require __DIR__ . '/../parties/footer.php'; ?>
+<script>
+const currentUser   = "<?= htmlspecialchars($userName ?? 'Utilisateur') ?>";
+const currentAvatar = "<?= strtoupper(substr($userName ?? 'U', 0, 1)) ?>";
+const isAdmin       = <?= $isAdmin ? 'true' : 'false' ?>;
+const currentVideoId = <?= (int)($current['id'] ?? 0) ?>;
+
+const commentForm = document.querySelector("#commentForm");
+if (commentForm) {
+    commentForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const form     = this;
+        const formData = new FormData(form);
+        const textarea = form.querySelector("textarea");
+
+       fetch(`?page=webtv&video=${currentVideoId}`, {
+            method: "POST",
+            body: formData,
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                appendComment(data.comment_id, currentUser, currentAvatar, textarea.value, data.is_admin, currentVideoId);
+                textarea.value = "";
+
+                // Met à jour le compteur
+                const counter = document.querySelector(".comments-header h2");
+                if (counter) {
+                    const current = parseInt(counter.textContent) || 0;
+                    counter.innerHTML = counter.innerHTML.replace(/^\d+/, current + 1);
+                }
+            }
+        });
+    });
+}
+
+document.querySelector(".comments-list").addEventListener("click", function (e) {
+    const btn = e.target.closest(".btn-delete-ajax");
+    if (!btn) return;
+
+    e.preventDefault();
+    if (!confirm("Supprimer ce commentaire ?")) return;
+
+    const commentId  = btn.dataset.commentId;
+    const commentItem = document.querySelector(`.comment-item[data-comment-id="${commentId}"]`);
+
+    const formData = new FormData();
+    formData.append("action",     "delete_comment");
+    formData.append("comment_id", commentId);
+
+    fetch("?page=webtv", {
+        method: "POST",
+        body: formData,
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success && commentItem) {
+            commentItem.remove();
+
+            const counter = document.querySelector(".comments-header h2");
+            if (counter) {
+                const current = parseInt(counter.textContent) || 0;
+                if (current > 0) counter.innerHTML = counter.innerHTML.replace(/^\d+/, current - 1);
+            }
+        }
+    });
+});
+
+function appendComment(commentId, author, avatar, texte, admin, videoId) {
+    const commentsList = document.querySelector(".comments-list");
+
+    
+    const empty = commentsList.querySelector(".no-comments");
+    if (empty) empty.remove();
+
+    const deleteBtn = admin ? `
+        <button class="btn-delete btn-delete-ajax" data-comment-id="${commentId}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Supprimer
+        </button>` : '';
+
+    const newComment = document.createElement("div");
+    newComment.classList.add("comment-item");
+    newComment.dataset.commentId = commentId;
+    newComment.innerHTML = `
+        <div class="comment-avatar">${avatar}</div>
+        <div class="comment-content">
+            <div class="comment-header">
+                <span class="comment-author">${author}</span>
+                <span class="comment-date">à l'instant</span>
+            </div>
+            <p class="comment-text">${texte.replace(/</g, "&lt;")}</p>
+            ${deleteBtn}
+        </div>`;
+
+    commentsList.prepend(newComment);
+}
+</script>
+
 </body>
 </html>

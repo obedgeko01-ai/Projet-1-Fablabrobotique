@@ -1,66 +1,4 @@
-<?php
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    if (empty($email) || empty($password)) {
-        $error = "Tous les champs sont requis.";
-    } else {
-        $host = "localhost";
-        $user = "root";
-        $pass = "";
-        $dbname = "fablab";
-
-        $conn = new mysqli($host, $user, $pass, $dbname);
-
-        if ($conn->connect_error) {
-            die("Erreur de connexion : " . $conn->connect_error);
-        }
-
-        $stmt = $conn->prepare("SELECT id, nom, mot_de_passe, role FROM connexion WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows === 1) {
-            $stmt->bind_result($id, $nom, $hashedPassword, $role);
-            $stmt->fetch();
-
-            if (password_verify($password, $hashedPassword)) {
-                $_SESSION['utilisateur_id'] = $id;
-                $_SESSION['utilisateur_nom'] = $nom;
-                $_SESSION['utilisateur_email'] = $email;
-                $_SESSION['utilisateur_role'] = !empty($role) ? $role : 'Utilisateur';
-
-                
-                $initiales = '';
-                if (!empty($nom)) {
-                    $parts = preg_split('/\s+/', trim($nom));
-                    $initiales = (count($parts) >= 2)
-                        ? strtoupper(substr($parts[0], 0, 1) . substr(end($parts), 0, 1))
-                        : strtoupper(substr($parts[0], 0, 2));
-                } else {
-                    $initiales = 'US';
-                }
-                $_SESSION['utilisateur_avatar'] = "https://via.placeholder.com/40/232e59/ffffff?text=" . $initiales;
-
-                
-                header("Location: ?page=accueil");
-                exit;
-            } else {
-                $error = "Mot de passe incorrect.";
-            }
-        } else {
-            $error = "Aucun compte trouvé avec cet email.";
-        }
-
-        $stmt->close();
-        $conn->close();
-    }
-}
-?>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -83,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <img src="../public/images/global/ajc_logo_blanc.png" alt="Logo FABLAB" class="navbar-logo" />
             <a href="?page=accueil" class="brand-name">FABLAB ROBOTIQUE</a>
         </div>
+
     </div>
 </header>
 

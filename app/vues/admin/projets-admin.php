@@ -39,24 +39,23 @@
         <section class="dashboard">
             <h1><i class="fas fa-project-diagram"></i> Gestion des Projets</h1>
 
-            <?php if (!empty($_SESSION['message'])): ?>
-                <div class="alert alert-<?= $_SESSION['message_type'] ?>">
-                    <i class="fas fa-<?= $_SESSION['message_type'] === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
-                    <?= htmlspecialchars($_SESSION['message']) ?>
-                </div>
-                <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
-            <?php endif; ?>
+         <?php if (!empty($flashMessage)): ?>
+  <div class="alert alert-<?= htmlspecialchars($flashType ?? 'info') ?>">
+    <i class="fas fa-<?= $flashType === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
+    <?= htmlspecialchars($flashMessage) ?>
+  </div>
+<?php endif; ?>
 
             <div class="action-buttons">
                 <button class="btn btn-primary" onclick="openModal('create')">
                     <i class="fas fa-plus"></i> Nouveau Projet
                 </button>
                 <span class="stats-badge">
-                    <i class="fas fa-folder"></i> <?= $total_projects ?> projet(s)
+                    <i class="fas fa-folder"></i> <?= $total_projets ?> projet(s)
                 </span>
             </div>
 
-            <?php if (empty($projects)): ?>
+            <?php if (empty($projets)): ?>
                 <div style="padding: 40px; text-align: center; color: var(--text-muted);">
                     <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
                     <p>Aucun projet pour le moment. Créez-en un pour commencer !</p>
@@ -75,15 +74,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($projects as $project): ?>
+                        <?php foreach ($projets as $projet): ?>
                             <?php
                            
                             $imageSrc = '';
-                            if (!empty($project['image_url'])) {
-                                if (str_starts_with($project['image_url'], 'http://') || str_starts_with($project['image_url'], 'https://')) {
-                                    $imageSrc = $project['image_url'];
+                            if (!empty($projet['image_url'])) {
+                                if (str_starts_with($projet['image_url'], 'http://') || str_starts_with($projet['image_url'], 'https://')) {
+                                    $imageSrc = $projet['image_url'];
                                 } else {
-                                    $imageSrc = '../public/images/projets/' . $project['image_url'];
+                                    $imageSrc = '../public/images/projets/' . $projet['image_url'];
                                 }
                             }
                             ?>
@@ -92,7 +91,7 @@
                                     <?php if (!empty($imageSrc)): ?>
                                         <div class="image-container" style="display: inline-block; position: relative;">
                                             <img src="<?= htmlspecialchars($imageSrc) ?>" 
-                                                 alt="<?= htmlspecialchars($project['title']) ?>" 
+                                                 alt="<?= htmlspecialchars($projet['titre']) ?>" 
                                                  class="project-image-thumb"
                                                  style="width: 100px; height: 70px; object-fit: cover; border-radius: 8px; border: 2px solid var(--card-border); display: block;"
                                                  onerror="tryProxyImage(this, '<?= htmlspecialchars($imageSrc, ENT_QUOTES) ?>')">
@@ -107,17 +106,17 @@
                                         </div>
                                     <?php endif; ?>
                                 </td>
-                                <td><strong style="color: var(--primary-color);"><?= htmlspecialchars($project['title']) ?></strong></td>
-                                <td style="color: var(--text-muted);"><?= htmlspecialchars(substr($project['description'], 0, 60)) ?>...</td>
-                                <td><?= htmlspecialchars($project['auteur'] ?? 'N/A') ?></td>
-                                <td style="color: var(--text-muted); font-size: 0.85rem;"><?= htmlspecialchars(substr($project['technologies'] ?? 'N/A', 0, 40)) ?></td>
-                                <td><?= date('d/m/Y', strtotime($project['created_at'])) ?></td>
+                                <td><strong style="color: var(--primary-color);"><?= htmlspecialchars($projet['titre']) ?></strong></td>
+                                <td style="color: var(--text-muted);"><?= htmlspecialchars(substr($projet['description'], 0, 60)) ?>...</td>
+                                <td><?= htmlspecialchars($projet['auteur'] ?? 'N/A') ?></td>
+                                <td style="color: var(--text-muted); font-size: 0.85rem;"><?= htmlspecialchars(substr($projet['technologies'] ?? 'N/A', 0, 40)) ?></td>
+                                <td><?= date('d/m/Y', strtotime($projet['cree_le'])) ?></td>
                                 <td>
                                     <div class="table-actions" style="display: flex; gap: 8px; justify-content: center;">
-                                        <button class="btn btn-warning btn-small" onclick='editProject(<?= $project["id"] ?>)' title="Modifier">
+                                        <button class="btn btn-warning btn-small" onclick='editProject(<?= $projet["id"] ?>)' title="Modifier">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <button class="btn btn-danger btn-small" onclick="deleteProject(<?= $project['id'] ?>, '<?= addslashes($project['title']) ?>')" title="Supprimer">
+                                        <button class="btn btn-danger btn-small" onclick="deleteProject(<?= $projet['id'] ?>, '<?= addslashes($projet['titre']) ?>')" title="Supprimer">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -141,11 +140,11 @@
 
     <form id="projectForm" method="POST" action="?page=admin-projets" enctype="multipart/form-data">
         <input type="hidden" name="action" id="formAction" value="create">
-        <input type="hidden" name="project_id" id="projectId">
+        <input type="hidden" name="projet_id" id="projetId">
 
         <div class="form-group">
-            <label for="title">Titre du projet *</label>
-            <input type="text" id="title" name="title" required>
+            <label for="titre">Titre du projet *</label>
+            <input type="text" id="titre" name="titre" required>
         </div>
 
         <div class="form-group">
@@ -159,8 +158,8 @@
         </div>
 
         <div class="form-group">
-            <label for="description_detailed">Description détaillée</label>
-            <textarea id="description_detailed" name="description_detailed" rows="6" placeholder="Description complète du projet..."></textarea>
+            <label for="description_detaillee">Description détaillée</label>
+            <textarea id="description_detaillee" name="description_detaillee" rows="6" placeholder="Description complète du projet..."></textarea>
         </div>
 
         <div class="form-group">
@@ -169,13 +168,13 @@
         </div>
 
         <div class="form-group">
-            <label for="features">Fonctionnalités principales</label>
-            <textarea id="features" name="features" rows="3" placeholder="Séparez par | exemple: Navigation autonome|Détection d'obstacles"></textarea>
+            <label for="fonctionnalites">Fonctionnalités principales</label>
+            <textarea id="fonctionnalites" name="fonctionnalites" rows="3" placeholder="Séparez par | exemple: Navigation autonome|Détection d'obstacles"></textarea>
         </div>
 
         <div class="form-group">
-            <label for="challenges">Défis rencontrés</label>
-            <textarea id="challenges" name="challenges" rows="3" placeholder="Défis techniques et solutions..."></textarea>
+            <label for="defis">Défis rencontrés</label>
+            <textarea id="defis" name="defis" rows="3" placeholder="Défis techniques et solutions..."></textarea>
         </div>
 
        
@@ -240,7 +239,7 @@
 
 
 <script id="projectsData" type="application/json">
-<?= json_encode($projects ?? []) ?>
+<?= json_encode($projets ?? []) ?>
 </script>
 
 <script>
@@ -353,14 +352,14 @@ function openModal(action, project = null) {
     } else {
         title.textContent = "Modifier le projet";
         document.getElementById('formAction').value = 'update';
-        document.getElementById('projectId').value = project.id;
-        document.getElementById('title').value = project.title;
+        document.getElementById('projetId').value = project.id;
+        document.getElementById('titre').value = projet.titre;
         document.getElementById('description').value = project.description;
         document.getElementById('auteur').value = project.auteur || '';
-        document.getElementById('description_detailed').value = project.description_detailed || '';
+        document.getElementById('description_detaillee').value = projet.description_detaillee || '';
         document.getElementById('technologies').value = project.technologies || '';
-        document.getElementById('features').value = project.features || '';
-        document.getElementById('challenges').value = project.challenges || '';
+        document.getElementById('fonctionnalites').value = projet.fonctionnalites || '';
+        document.getElementById('defis').value = projet.defis || '';
         document.getElementById('image_url').value = project.image_url || '';
         
         
@@ -401,7 +400,7 @@ function deleteProject(id, titre) {
         form.method = 'POST';
         form.action = '?page=admin-projets';
         form.innerHTML = `<input type="hidden" name="action" value="delete">
-                          <input type="hidden" name="project_id" value="${id}">`;
+                          <input type="hidden" name="projet_id" value="${id}">`;
         document.body.appendChild(form);
         form.submit();
     }

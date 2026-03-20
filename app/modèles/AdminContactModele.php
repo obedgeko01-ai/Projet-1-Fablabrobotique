@@ -8,13 +8,13 @@ class AdminContactModele
 
     public function all(): array
     {
-        $sql = "SELECT * FROM contact_messages ORDER BY date_envoi DESC";
+        $sql = "SELECT * FROM contact_messages ORDER BY envoye_le DESC";
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function updateStatut(int $id, string $statut): bool
     {
-        $stmt = $this->db->prepare("UPDATE contact_messages SET statut = :statut, date_lecture = NOW() WHERE id = :id");
+        $stmt = $this->db->prepare("UPDATE contact_messages SET statut = :statut, lu_le = NOW() WHERE id = :id");
         return $stmt->execute([':id' => $id, ':statut' => $statut]);
     }
 

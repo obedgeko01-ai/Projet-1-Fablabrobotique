@@ -2,22 +2,19 @@
 require_once __DIR__ . '/../modèles/AuthModele.php';
 require_once __DIR__ . '/../config/database.php';
 
+class AuthControleur
+{
+    private AuthModele $modele;
 
-
-class AuthControleur {
-    private $modele;
-
-    public function __construct() {
-       
-        $db = (new Database())->getConnection();
-        $this->modele = new AuthModele($db);
-       
+    public function __construct()
+    {
+        $this->modele = new AuthModele(getDatabase());
     }
 
-   
-    public function login() {
+    public function login(): void
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = $_POST['email'] ?? '';
+            $email      = $_POST['email']    ?? '';
             $motdepasse = $_POST['password'] ?? '';
 
             if (empty($email) || empty($motdepasse)) {
@@ -29,28 +26,27 @@ class AuthControleur {
             $utilisateur = $this->modele->verifierConnexion($email, $motdepasse);
 
             if ($utilisateur) {
-                $_SESSION['utilisateur_id'] = $utilisateur['id'];
-                $_SESSION['utilisateur_nom'] = $utilisateur['nom'];
+                $_SESSION['utilisateur_id']    = $utilisateur['id'];
+                $_SESSION['utilisateur_nom']   = $utilisateur['nom'];
                 $_SESSION['utilisateur_email'] = $utilisateur['email'];
-                $_SESSION['utilisateur_role'] = $utilisateur['role'];
-
+                $_SESSION['utilisateur_role']  = $utilisateur['role'];
                 header("Location: ?page=accueil");
                 exit;
-            } else {
-                $error = "Email ou mot de passe incorrect.";
             }
+
+            $error = "Email ou mot de passe incorrect.";
         }
 
         require __DIR__ . '/../vues/utilisateurs/login.php';
     }
 
- 
-    public function inscription() {
+    public function inscription(): void
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nom = $_POST['name'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $motdepasse = $_POST['password'] ?? '';
-            $confirm = $_POST['confirm-password'] ?? '';
+            $nom        = $_POST['name']             ?? '';
+            $email      = $_POST['email']            ?? '';
+            $motdepasse = $_POST['password']         ?? '';
+            $confirm    = $_POST['confirm-password'] ?? '';
 
             if (empty($nom) || empty($email) || empty($motdepasse) || empty($confirm)) {
                 $error = "Tous les champs sont requis.";
@@ -61,7 +57,7 @@ class AuthControleur {
             } else {
                 $hash = password_hash($motdepasse, PASSWORD_DEFAULT);
                 $this->modele->createUser($nom, $email, $hash);
-                $_SESSION['success'] = "Compte créé avec succès ! Vous pouvez maintenant vous connecter.";
+                $_SESSION['success'] = "Compte créé avec succès !";
                 header("Location: ?page=login");
                 exit;
             }
@@ -70,15 +66,15 @@ class AuthControleur {
         require __DIR__ . '/../vues/utilisateurs/inscription.php';
     }
 
- 
-    public function deconnexion() {
+    public function deconnexion(): void
+    {
         session_destroy();
         header("Location: ?page=accueil");
         exit;
     }
 
-    
-    public function mdpOublie() {
+    public function mdpOublie(): void
+    {
         require __DIR__ . '/../../app/vues/utilisateurs/motdepasseoublie.php';
     }
 }

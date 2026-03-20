@@ -32,7 +32,7 @@
       <div class="form-group">
         <label for="name" class="form-label">Nom complet *</label>
         <input type="text" id="name" name="name" class="form-input" placeholder="Entrez votre nom"
-               value="<?= $_POST['name'] ?? '' ?>" required>
+              value="<?= htmlspecialchars($_POST['name'] ?? '') ?>">
       </div>
 
       <div class="form-group">

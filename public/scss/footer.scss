@@ -1,0 +1,136 @@
+@use "variables" as v;
+
+.site-footer {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: #1a2332;
+  border-top: 2px solid v.$primary-border;
+}
+
+.site-footer-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.footer-social-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.footer-social-icon {
+  height: 48px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  filter: brightness(0.95) grayscale(0.2);
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+}
+
+.footer-social-icons a:hover .footer-social-icon {
+  transform: translateY(-2px) scale(1.06);
+  filter: brightness(1) grayscale(0);
+}
+
+.footer-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+
+  ul {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: rgba(245, 245, 245, 0.85);
+    font-weight: 600;
+    font-size: 15px;
+    transition: v.$transition;
+    position: relative;
+    padding: 4px 0;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: v.$primary;
+      transition: v.$transition;
+    }
+
+    &:hover {
+      color: v.$primary;
+      &::after {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.site-footer-bottom {
+  width: 100%;
+  max-width: 1100px;
+  margin: 24px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+  p {
+    margin: 0;
+    color: rgba(245, 245, 245, 0.65);
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-social-icons {
+    gap: 32px;
+  }
+  .footer-social-icon {
+    height: 42px;
+  }
+  .footer-nav-links ul {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-footer {
+    padding: 32px 16px 16px;
+  }
+  .footer-social-icons {
+    gap: 24px;
+  }
+  .footer-social-icon {
+    height: 36px;
+  }
+  .footer-nav-links {
+    flex-direction: column;
+    gap: 16px;
+    ul {
+      gap: 20px;
+    }
+    a {
+      font-size: 14px;
+    }
+  }
+}

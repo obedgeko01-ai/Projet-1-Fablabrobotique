@@ -1,18 +1,9 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) session_start();
-
-if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'])) {
-    header('Location: ?page=articles');
-    exit;
-}
-?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <title>Créer un Article</title>
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="<?= $GLOBALS['baseUrl'] ?>css/admin.css">
   <style>
     .image-preview-container {
       margin-top: 15px;
@@ -43,7 +34,7 @@ if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'])) {
 <body>
   <div class="dashboard">
     <h1><i class="fas fa-pen-nib"></i> Créer un nouvel article</h1>
-    
+
     <?php if (!empty($_SESSION['message'])): ?>
       <div class="alert alert-<?= $_SESSION['message_type'] ?>">
         <?= htmlspecialchars($_SESSION['message']) ?>
@@ -62,15 +53,14 @@ if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'])) {
         <textarea name="contenu" rows="8" required></textarea>
       </div>
 
-      
       <div class="form-group">
         <label>URL de l'image (optionnel)</label>
-        <input type="text" 
-               id="image_url" 
-               name="image_url" 
+        <input type="text"
+               id="image_url"
+               name="image_url"
                placeholder="https://exemple.com/image.jpg"
                oninput="previewImage(this.value)">
-        
+
         <div class="info-box">
           <strong>💡 Astuce :</strong> Vous pouvez coller n'importe quelle URL d'image depuis Google, Discord, etc.<br>
           Ou utiliser le champ ci-dessous pour uploader un fichier depuis votre ordinateur.
@@ -84,7 +74,6 @@ if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'])) {
           </div>
         </div>
       </div>
-
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
@@ -105,12 +94,8 @@ if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'])) {
       const container = document.getElementById('imagePreviewContainer');
       const spinner = document.getElementById('loadingSpinner');
 
-      
-      if (imageLoadTimeout) {
-        clearTimeout(imageLoadTimeout);
-      }
+      if (imageLoadTimeout) clearTimeout(imageLoadTimeout);
 
-     
       container.style.display = 'none';
       spinner.style.display = 'none';
 
@@ -119,18 +104,14 @@ if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'])) {
         spinner.style.display = 'block';
         preview.style.opacity = '0.3';
 
-        
         imageLoadTimeout = setTimeout(() => {
           spinner.style.display = 'none';
           preview.style.opacity = '1';
         }, 5000);
 
-        
         preview.src = url;
 
         preview.onerror = function() {
-          
-          console.log('Image directe échouée, tentative avec proxy...');
           const proxyUrl = '../app/proxy-image.php?url=' + encodeURIComponent(url);
           preview.src = proxyUrl;
 
@@ -139,7 +120,6 @@ if (!in_array($_SESSION['utilisateur_role'] ?? '', ['Éditeur', 'Admin'])) {
             spinner.style.display = 'none';
             preview.style.opacity = '1';
             container.style.display = 'none';
-            console.error('Impossible de charger l\'image');
           };
         };
 

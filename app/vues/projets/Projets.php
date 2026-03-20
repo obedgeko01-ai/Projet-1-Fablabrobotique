@@ -44,11 +44,11 @@ $role = $_SESSION['utilisateur_role'] ?? '';
     <h2 class="section-title">Projets récents</h2>
 
    <div class="projects-grid">
-<?php foreach ($projects as $project): ?>
+<?php foreach ($projets as $projet): ?>
 
     <?php
    
-    $txt = strtolower($project['title'] . ' ' . $project['description'] . ' ' . ($project['technologies'] ?? ''));
+    $txt = strtolower($projet['titre'] . ' ' . $projet['description'] . ' ' . ($projet['technologies'] ?? ''));
 
     if (str_contains($txt, "drone") || str_contains($txt, "fpv") || str_contains($txt, "quad")) {
         $categorie = "drone";
@@ -60,23 +60,23 @@ $role = $_SESSION['utilisateur_role'] ?? '';
 
     
     $imageSrc = '';
-    if (!empty($project['image_url'])) {
-        if (str_starts_with($project['image_url'], 'http://') || str_starts_with($project['image_url'], 'https://')) {
-            $imageSrc = $project['image_url']; 
+    if (!empty($projet['image_url'])) {
+        if (str_starts_with($projet['image_url'], 'http://') || str_starts_with($projet['image_url'], 'https://')) {
+            $imageSrc = $projet['image_url']; 
         } else {
-            $imageSrc = '../public/images/projets/' . $project['image_url']; 
+            $imageSrc = '../public/images/projets/' . $projet['image_url']; 
         }
     }
     ?>
 
     <div class="project-card"
          data-categorie="<?= $categorie ?>"
-         onclick="openModal(<?= $project['id']; ?>)">
+         onclick="openModal(<?= $projet['id']; ?>)">
 
         <div class="project-image">
             <?php if (!empty($imageSrc)): ?>
                 <img src="<?= htmlspecialchars($imageSrc) ?>"
-                     alt="<?= htmlspecialchars($project['title']) ?>"
+                     alt="<?= htmlspecialchars($projet['titre']) ?>"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <i class="fas fa-code" style="display:none;"></i>
             <?php else: ?>
@@ -85,12 +85,12 @@ $role = $_SESSION['utilisateur_role'] ?? '';
         </div>
 
         <div class="project-content">
-            <h3 class="project-title"><?= htmlspecialchars($project['title']) ?></h3>
-            <p class="project-description"><?= htmlspecialchars($project['description']) ?></p>
+            <h3 class="project-title"><?= htmlspecialchars($projet['titre']) ?></h3>
+            <p class="project-description"><?= htmlspecialchars($projet['description']) ?></p>
 
-            <?php if (!empty($project['technologies'])): ?>
+            <?php if (!empty($projet['technologies'])): ?>
             <div class="project-tags">
-                <?php foreach (explode(',', $project['technologies']) as $tech): ?>
+                <?php foreach (explode(',', $projet['technologies']) as $tech): ?>
                     <span class="tag"><?= htmlspecialchars(trim($tech)) ?></span>
                 <?php endforeach; ?>
             </div>
@@ -106,23 +106,23 @@ $role = $_SESSION['utilisateur_role'] ?? '';
 </section>
 
 
-<?php foreach ($projects as $project): ?>
+<?php foreach ($projets as $projet): ?>
 <?php
     
     $imageSrc = '';
-    if (!empty($project['image_url'])) {
-        if (str_starts_with($project['image_url'], 'http://') || str_starts_with($project['image_url'], 'https://')) {
-            $imageSrc = $project['image_url'];
+    if (!empty($projet['image_url'])) {
+        if (str_starts_with($projet['image_url'], 'http://') || str_starts_with($projet['image_url'], 'https://')) {
+            $imageSrc = $projet['image_url'];
         } else {
-            $imageSrc = '../public/images/projets/' . $project['image_url'];
+            $imageSrc = '../public/images/projets/' . $projet['image_url'];
         }
     }
 ?>
-<div class="modal" id="modal-<?= $project['id']; ?>">
+<div class="modal" id="modal-<?= $projet['id']; ?>">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 class="modal-title"><?= htmlspecialchars($project['title']); ?></h2>
-            <button class="close-btn" onclick="closeModal(<?= $project['id']; ?>)">&times;</button>
+            <h2 class="modal-title"><?= htmlspecialchars($projet['titre']); ?></h2>
+            <button class="close-btn" onclick="closeModal(<?= $projet['id']; ?>)">&times;</button>
         </div>
 
         <div class="modal-body">
@@ -131,7 +131,7 @@ $role = $_SESSION['utilisateur_role'] ?? '';
                     <div class="modal-image">
                         <?php if (!empty($imageSrc)): ?>
                             <img src="<?= htmlspecialchars($imageSrc) ?>" 
-                                 alt="<?= htmlspecialchars($project['title']); ?>"
+                                 alt="<?= htmlspecialchars($projet['titre']); ?>"
                                  onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <i class="fas fa-code" style="display:none;"></i>
                         <?php else: ?>
@@ -142,16 +142,16 @@ $role = $_SESSION['utilisateur_role'] ?? '';
 
                 <div class="modal-content-section">
                     <div class="modal-description">
-                        <?= nl2br(htmlspecialchars($project['description'])); ?>
+                        <?= nl2br(htmlspecialchars($projet['description'])); ?>
                     </div>
 
-                    <?php if (isset($project['technologies']) && trim($project['technologies']) !== ''): ?>
+                    <?php if (isset($projet['technologies']) && trim($projet['technologies']) !== ''): ?>
                         <div class="modal-section-title">
                             <i class="fas fa-microchip"></i> Technologies utilisées
                         </div>
                         <div class="modal-tags">
                             <?php 
-                            $techs = explode(',', $project['technologies']);
+                            $techs = explode(',', $projet['technologies']);
                             foreach ($techs as $tech): ?>
                                 <span class="tag"><?= htmlspecialchars(trim($tech)); ?></span>
                             <?php endforeach; ?>
@@ -159,7 +159,7 @@ $role = $_SESSION['utilisateur_role'] ?? '';
                     <?php endif; ?>
 
                     <div class="action-buttons">
-                        <a href="?page=projet&id=<?= $project['id']; ?>" class="btn btn-primary">
+                        <a href="?page=projet&id=<?= $projet['id']; ?>" class="btn btn-primary">
                             <i class="fas fa-eye"></i> Voir plus de détails
                         </a>
                     </div>

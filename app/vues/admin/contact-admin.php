@@ -35,13 +35,12 @@
       <h1><i class="fas fa-envelope"></i> Gestion des Messages de Contact</h1>
 
       
-      <?php if (!empty($_SESSION['message'])): ?>
-        <div class="alert alert-<?= $_SESSION['message_type'] ?>">
-          <i class="fas fa-<?= $_SESSION['message_type'] === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
-          <?= htmlspecialchars($_SESSION['message']) ?>
-        </div>
-        <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
-      <?php endif; ?>
+   <?php if (!empty($flashMessage)): ?>
+  <div class="alert alert-<?= htmlspecialchars($flashType ?? 'info') ?>">
+    <i class="fas fa-<?= $flashType === 'success' ? 'check-circle' : 'exclamation-circle' ?>"></i>
+    <?= htmlspecialchars($flashMessage) ?>
+  </div>
+<?php endif; ?>
 
      
       <div class="contact-stats-cards">
@@ -111,7 +110,7 @@
                   </td>
                   <td class="contact-message-sujet"><?= htmlspecialchars($msg['sujet']) ?></td>
                   <td class="contact-message-excerpt"><?= htmlspecialchars(substr($msg['message'], 0, 50)) ?>...</td>
-                  <td><?= date('d/m/Y H:i', strtotime($msg['date_envoi'])) ?></td>
+                  <td><?= date('d/m/Y H:i', strtotime($msg['envoye_le'])) ?></td>
                   <td>
                     <span class="role-badge <?= match($msg['statut']) {
                       'lu' => 'role-editeur',
@@ -163,7 +162,7 @@ function viewMessage(msg) {
     <div class="form-group"><label><i class="fas fa-user"></i> Nom</label><input type="text" readonly value="${msg.nom}"></div>
     <div class="form-group"><label><i class="fas fa-envelope"></i> Email</label><input type="text" readonly value="${msg.email}"></div>
     <div class="form-group"><label><i class="fas fa-tag"></i> Sujet</label><input type="text" readonly value="${msg.sujet}"></div>
-    <div class="form-group"><label><i class="fas fa-calendar"></i> Date d'envoi</label><input type="text" readonly value="${msg.date_envoi}"></div>
+    <div class="form-group"><label><i class="fas fa-calendar"></i> Date d'envoi</label><input type="text" readonly value="${msg.envoye_le}"></div>
     <div class="form-group"><label><i class="fas fa-info-circle"></i> Statut</label><input type="text" readonly value="${msg.statut}"></div>
     <div class="form-group"><label><i class="fas fa-network-wired"></i> Adresse IP</label><input type="text" readonly value="${msg.ip_address ?? 'N/A'}"></div>
     <div class="form-group"><label><i class="fas fa-comment-dots"></i> Message</label><textarea readonly>${msg.message}</textarea></div>

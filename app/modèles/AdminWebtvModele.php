@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../config/database.php';
 
 class AdminWebtvModele
@@ -9,14 +8,14 @@ class AdminWebtvModele
 
     public function all(): array
     {
-        $sql = "SELECT id, titre, description, categorie, type, fichier, youtube_id, vignette, created_at
-                FROM videos ORDER BY created_at DESC";
+        $sql = "SELECT id, titre, description, categorie, type, fichier, youtube_id, vignette, cree_le
+                FROM videos ORDER BY cree_le DESC";
         return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function create(array $data): int
     {
-        $sql = "INSERT INTO videos (titre, description, categorie, type, fichier, youtube_id, vignette, created_at)
+        $sql = "INSERT INTO videos (titre, description, categorie, type, fichier, youtube_id, vignette, cree_le)
                 VALUES (:titre, :description, :categorie, :type, :fichier, :youtube_id, :vignette, NOW())";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
@@ -26,7 +25,7 @@ class AdminWebtvModele
             ':type'        => $data['type'] ?? 'local',
             ':fichier'     => $data['fichier'] ?? null,
             ':youtube_id'  => $data['youtube_id'] ?? null,
-            ':vignette'    => $data['vignette'] ?? null
+            ':vignette'    => $data['vignette'] ?? null,
         ]);
         return (int)$this->db->lastInsertId();
     }
@@ -46,7 +45,7 @@ class AdminWebtvModele
             ':fichier'     => $data['fichier'] ?? null,
             ':youtube_id'  => $data['youtube_id'] ?? null,
             ':vignette'    => $data['vignette'] ?? null,
-            ':id'          => $id
+            ':id'          => $id,
         ]);
     }
 

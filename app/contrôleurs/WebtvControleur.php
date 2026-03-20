@@ -19,38 +19,123 @@ class WebtvControleur
             session_start();
         }
 
-        // Filtres
-        $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
-        $cat = isset($_GET['categorie']) ? trim((string)$_GET['categorie']) : '';
+        $q   = $_GET['q']         ?? '';
+        $cat = $_GET['categorie'] ?? '';
 
-        $videos = $this->videoModele->all($q ?: null, $cat ?: null);
+        $videos     = $this->videoModele->all($q ?: null, $cat ?: null);
         $categories = $this->videoModele->categories();
+        $current    = $this->selectCurrentVideo($videos);
 
-        $current = $this->selectCurrentVideo($videos);
-
-        // Ajout commentaire
+        // ---------- AJOUT COMMENTAIRE ----------
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add_comment') {
-            $this->handleCommentSubmission($current);
-            return;
+            $result = $this->handleCommentSubmission($current);
+
+            if ($this->isAjax()) {
+                header('Content-Type: application/json');
+                echo json_encode($result);
+                exit;
+            }
+
+            $this->redirect($current);
         }
 
-        // Suppression (admin)
+        // ---------- SUPPRESSION COMMENTAIRE (AJAX) ----------
+        if (
+            $_SERVER['REQUEST_METHOD'] === 'POST' &&
+            ($_POST['action'] ?? '') === 'delete_comment' &&
+            $this->isAjax()
+        ) {
+            $commentId = $_POST['comment_id'] ?? '';
+            $isAdmin   = !empty($_SESSION['utilisateur_role']) && strtolower($_SESSION['utilisateur_role']) === 'admin';
+
+            if (!$isAdmin) {
+                header('Content-Type: application/json');
+                echo json_encode(["success" => false, "message" => "Non autorise"]);
+                exit;
+            }
+
+            if (!ctype_digit((string)$commentId)) {
+                header('Content-Type: application/json');
+                echo json_encode(["success" => false, "message" => "ID invalide"]);
+                exit;
+            }
+
+            $this->commentaireModele->delete((int)$commentId);
+            header('Content-Type: application/json');
+            echo json_encode(["success" => true]);
+            exit;
+        }
+
+        // ---------- SUPPRESSION COMMENTAIRE (GET classique) ----------
         if (isset($_GET['del']) && !empty($_SESSION['utilisateur_role']) && strtolower($_SESSION['utilisateur_role']) === 'admin') {
             $this->handleCommentDeletion($_GET['del'], $current);
-            return;
         }
 
-        // Incrément vues
+        // ---------- VUES ----------
         if ($current && !empty($current['id'])) {
             $this->videoModele->incrementViews((int)$current['id']);
         }
 
-        // Commentaires (UNIQUEMENT par video_id)
+        // ---------- COMMENTAIRES ----------
         $commentaires = ($current && !empty($current['id']))
             ? $this->commentaireModele->listForVideo((int)$current['id'])
             : [];
 
+        $isLogged = !empty($_SESSION['utilisateur_id']);
+        $isAdmin  = !empty($_SESSION['utilisateur_role']) && strtolower($_SESSION['utilisateur_role']) === 'admin';
+        $userName = $_SESSION['utilisateur_nom'] ?? null;
+
+        $flashMessage = $_SESSION['message']      ?? null;
+        $flashType    = $_SESSION['message_type'] ?? 'info';
+
+        unset($_SESSION['message'], $_SESSION['message_type']);
+
         require __DIR__ . '/../vues/webtv/webtv.php';
+    }
+
+    private function handleCommentSubmission(?array $current): array
+    {
+        if (!$current || empty($current['id'])) {
+            return ["success" => false, "message" => "Video introuvable"];
+        }
+
+        if (empty($_SESSION['utilisateur_id'])) {
+            return ["success" => false, "message" => "Connexion requise"];
+        }
+
+        $texte = trim($_POST['commentaire'] ?? '');
+
+        if ($texte === '') {
+            return ["success" => false, "message" => "Commentaire vide"];
+        }
+
+        $newId = $this->commentaireModele->create(
+            (int)$current['id'],
+            (int)$_SESSION['utilisateur_id'],
+            $texte
+        );
+
+        return [
+            "success"    => (bool)$newId,
+            "message"    => $newId ? "Commentaire publie" : "Erreur lors de la publication",
+            "comment_id" => $newId,
+            "is_admin"   => !empty($_SESSION['utilisateur_role']) && strtolower($_SESSION['utilisateur_role']) === 'admin',
+            "video_id"   => (int)$current['id'],
+        ];
+    }
+
+    private function handleCommentDeletion($commentId, ?array $current): void
+    {
+        if (!ctype_digit((string)$commentId)) {
+            $this->redirect($current);
+        }
+
+        $this->commentaireModele->delete((int)$commentId);
+
+        $_SESSION['message']      = "Commentaire supprime";
+        $_SESSION['message_type'] = "success";
+
+        $this->redirect($current);
     }
 
     private function selectCurrentVideo(array $videos): ?array
@@ -60,73 +145,26 @@ class WebtvControleur
             if ($video) return $video;
         }
 
-        if (isset($_GET['video_id']) && trim((string)$_GET['video_id']) !== '') {
-            $video = $this->videoModele->findByYoutubeId(trim((string)$_GET['video_id']));
+        if (isset($_GET['video_id']) && trim($_GET['video_id']) !== '') {
+            $video = $this->videoModele->findByYoutubeId(trim($_GET['video_id']));
             if ($video) return $video;
         }
 
-        return !empty($videos) ? $videos[0] : null;
+        return $videos[0] ?? null;
     }
 
-    private function handleCommentSubmission(?array $current): void
+    private function isAjax(): bool
     {
-        if (!$current || empty($current['id'])) {
-            $_SESSION['message'] = "Vidéo introuvable.";
-            $_SESSION['message_type'] = "danger";
-            $this->redirect($current);
-            return;
-        }
-
-        if (empty($_SESSION['utilisateur_id'])) {
-            $_SESSION['message'] = "Vous devez être connecté pour commenter.";
-            $_SESSION['message_type'] = "danger";
-            $this->redirect($current);
-            return;
-        }
-
-        $texte = trim((string)($_POST['commentaire'] ?? ''));
-
-        if ($texte === '') {
-            $_SESSION['message'] = "Le commentaire ne peut pas être vide.";
-            $_SESSION['message_type'] = "warning";
-            $this->redirect($current);
-            return;
-        }
-
-        $ok = $this->commentaireModele->create(
-            (int)$current['id'],
-            (int)$_SESSION['utilisateur_id'],
-            $texte
-        );
-
-        if ($ok) {
-            $_SESSION['message'] = "Commentaire publié ✅";
-            $_SESSION['message_type'] = "success";
-        } else {
-            $_SESSION['message'] = "Erreur lors de la publication du commentaire.";
-            $_SESSION['message_type'] = "danger";
-        }
-
-        $this->redirect($current);
-    }
-
-    private function handleCommentDeletion($commentId, ?array $current): void
-    {
-        if (!ctype_digit((string)$commentId)) {
-            $this->redirect($current);
-            return;
-        }
-
-        $this->commentaireModele->delete((int)$commentId);
-        $_SESSION['message'] = "Commentaire supprimé.";
-        $_SESSION['message_type'] = "success";
-        $this->redirect($current);
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+               strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
     private function redirect(?array $current): void
     {
         $videoParam = $current
-            ? (isset($current['youtube_id']) ? 'video_id=' . urlencode($current['youtube_id']) : 'video=' . (int)$current['id'])
+            ? (isset($current['youtube_id'])
+                ? 'video_id=' . urlencode($current['youtube_id'])
+                : 'video=' . (int)$current['id'])
             : '';
 
         header("Location: ?page=webtv" . ($videoParam ? "&$videoParam" : ""));

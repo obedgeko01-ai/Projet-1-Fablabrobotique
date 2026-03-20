@@ -9,6 +9,12 @@ class AdminUtilisateursControleur
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
         $this->modele = new AdminUtilisateursModele();
+
+             if (!isset($_SESSION['utilisateur_role']) || strtolower($_SESSION['utilisateur_role']) !== 'admin') {
+            header('Location: ?page=login');
+            exit();
+        }
+
     }
 
     public function handleRequest(?string $action = null): void

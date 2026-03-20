@@ -1,21 +1,25 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-class ArticleModele {
-    private $db;
+class ArticleModele
+{
+    private PDO $db;
 
-    public function __construct() {
-        $this->db = (new Database())->getConnection();
+    public function __construct()
+    {
+        $this->db = getDatabase();
     }
 
-    public function getAllArticles() {
-        $stmt = $this->db->query("SELECT * FROM articles ORDER BY created_at DESC");
+    public function getAllArticles(): array
+    {
+        $stmt = $this->db->query("SELECT * FROM articles ORDER BY cree_le DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getArticleById($id) {
+    public function getArticleById(int $id): ?array
+    {
         $stmt = $this->db->prepare("SELECT * FROM articles WHERE id = ?");
         $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 }
